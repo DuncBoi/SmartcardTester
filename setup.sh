@@ -75,8 +75,8 @@ cd "$WEB_DIR"
 if [ ! -f package.json ]; then
   log "No package.json found—initializing npm project..."
   npm init -y
-  log "Installing express & serialport..."
-  npm install express serialport
+  log "Installing Node.js dependencies..."
+  npm install express serialport @serialport/parser-readline socket.io rfb2
   log "Node.js project initialized."
 else
   log "package.json found—installing dependencies..."
