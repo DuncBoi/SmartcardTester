@@ -75,7 +75,6 @@ if ! command -v npm &>/dev/null || ! command -v node &>/dev/null; then
   log "Node.js or npm not found. Installing..."
   sudo apt-get update
   sudo apt-get install -y nodejs npm
-  fi
 else
   log "Node.js and npm already installed."
 fi
