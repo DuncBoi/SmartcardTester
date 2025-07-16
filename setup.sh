@@ -71,6 +71,15 @@ arduino-cli upload -p "$SERIAL_PORT" --fqbn "$BOARD_FQBN" "$SKETCH_DIR"
 log "Arduino upload complete."
 
 # 6) Node.js setup
+if ! command -v npm &>/dev/null || ! command -v node &>/dev/null; then
+  log "Node.js or npm not found. Installing..."
+  sudo apt-get update
+  sudo apt-get install -y nodejs npm
+  fi
+else
+  log "Node.js and npm already installed."
+fi
+
 cd "$WEB_DIR"
 if [ ! -f package.json ]; then
   log "No package.json found—initializing npm project..."
