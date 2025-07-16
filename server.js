@@ -117,6 +117,6 @@ app.get('/test-card', (r,s) => {
   s.send('OK');
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   io.emit('status', `Server up on port ${PORT}`);
 });
