@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,116 +26,34 @@
       gap: 8px;
     }
     h1 { text-align: center; font-size: 1.7rem; margin-bottom: 0.7em; }
-
     form {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      width: 100%;
+      display: flex; flex-direction: column; gap: 0; width: 100%;
     }
     .fields-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px 30px;
-      margin-bottom: 0;
-      align-items: flex-end;
-      justify-content: flex-start;
+      display: flex; flex-wrap: wrap; gap: 18px 30px; margin-bottom: 0;
+      align-items: flex-end; justify-content: flex-start;
     }
     .field-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 120px;
-      flex: 1 1 150px;
-      max-width: 230px;
+      display: flex; flex-direction: column; min-width: 120px;
+      flex: 1 1 150px; max-width: 230px;
     }
-    .field-group label {
-      font-weight: 600;
-      margin-bottom: 6px;
+    .field-group label { font-weight: 600; margin-bottom: 6px; }
+    .field-group input, .field-group select {
+      font-size: 1.07rem; padding: 7px 10px; border: 1.2px solid #bbb;
+      border-radius: 5px; background: #f8f8fa; margin-bottom: 0;
     }
-    .field-group input,
-    .field-group select {
-      font-size: 1.07rem;
-      padding: 7px 10px;
-      border: 1.2px solid #bbb;
-      border-radius: 5px;
-      background: #f8f8fa;
-      margin-bottom: 0;
-    }
-    .horizontal-fields {
-      display: flex;
-      gap: 24px;
-      align-items: flex-end;
-      margin-top: 6px;
-      margin-bottom: 0;
-      flex-wrap: wrap;
-    }
-    .flex-grow { flex: 2 1 220px; }
-
-    .run-mode-row {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-      margin-top: 6px;
-      flex-wrap: wrap;
-    }
-    .radio-group {
-      display: flex;
-      gap: 18px;
-      align-items: center;
-      background: #f8f8fa;
-      border-radius: 5px;
-      padding: 7px 16px;
-    }
-    .radio-group label {
-      font-weight: 500;
-      font-size: 1.02rem;
-      gap: 4px;
-      cursor: pointer;
-    }
-    .radio-group input[type="radio"] {
-      accent-color: #0066cc;
-      margin-right: 5px;
-    }
-    .swipe-group {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .swipe-group .field-group {
-      margin-bottom: 0;
-      min-width: 110px;
-    }
-    .btn-row {
-      display: flex;
-      gap: 16px;
-      margin-top: 18px;
-      align-items: center;
-      justify-content: flex-start;
-    }
+    .btn-row { display: flex; gap: 16px; margin-top: 18px; align-items: center; justify-content: flex-start; }
     button {
-      font-size: 1rem; font-weight: 600;
-      padding: 11px 28px;
-      background: #0066cc;
-      color: white;
-      border: none; border-radius: 5px;
-      cursor: pointer;
-      margin-top: 0;
-      transition: background 0.18s;
+      font-size: 1rem; font-weight: 600; padding: 11px 28px;
+      background: #0066cc; color: white; border: none; border-radius: 5px;
+      cursor: pointer; margin-top: 0; transition: background 0.18s;
     }
     button:hover { background: #005bb5; }
     #stopButton { background: #cc0000; }
     #stopButton:hover { background: #b50000; }
-
     #estimate {
-      color: #666;
-      font-size: 1.06rem;
-      font-style: italic;
-      margin-top: 13px;
-      margin-bottom: 0;
-      min-height: 1.6em;
-      padding-left: 2px;
-      text-align: left;
+      color: #666; font-size: 1.06rem; font-style: italic;
+      margin-top: 13px; margin-bottom: 0; min-height: 1.6em; padding-left: 2px; text-align: left;
     }
     .status, .countdown, #progress {
       margin-top: 10px; font-size: 1.08rem; text-align: left;
@@ -143,12 +62,9 @@
     .tick { color: #20a020; font-weight: bold; }
     .err { color: #c00; font-weight: bold; }
     #progress { font-weight: bold; color: #444;}
-
     @media (max-width: 900px) {
       .container { max-width: 99vw; }
-      .fields-grid, .horizontal-fields, .run-mode-row, .btn-row, .swipe-group {
-        flex-direction: column; gap: 8px;
-      }
+      .fields-grid, .btn-row { flex-direction: column; gap: 8px; }
       .field-group { max-width: 100vw; }
     }
   </style>
@@ -175,12 +91,16 @@
           <input type="text" id="pinValue" placeholder="123456">
         </div>
         <div class="field-group">
-          <label for="waitBefore">Delay before PIN (s):</label>
-          <input type="number" id="waitBefore" value="2" min="0">
+          <label for="startDeg">Start Degree (°):</label>
+          <input type="number" id="startDeg" value="20" min="0" max="180">
         </div>
         <div class="field-group">
-          <label for="waitAfter">Delay before eject (s):</label>
-          <input type="number" id="waitAfter" value="10" min="0">
+          <label for="endDeg">End Degree (°):</label>
+          <input type="number" id="endDeg" value="95" min="0" max="180">
+        </div>
+        <div class="field-group">
+          <label for="stepSize">Step Size (°):</label>
+          <input type="number" id="stepSize" value="1" min="1" max="90">
         </div>
         <div class="field-group">
           <label for="speedSelect">Sweep Speed (ms/°):</label>
@@ -191,8 +111,20 @@
           </select>
         </div>
         <div class="field-group">
+          <label for="waitBefore">Delay before PIN (s):</label>
+          <input type="number" id="waitBefore" value="2" min="0">
+        </div>
+        <div class="field-group">
+          <label for="waitAfter">Delay before eject (s):</label>
+          <input type="number" id="waitAfter" value="10" min="0">
+        </div>
+        <div class="field-group">
           <label for="pauseDelay">Delay between swipes (s):</label>
           <input type="number" id="pauseDelay" value="1" min="0" step="0.1">
+        </div>
+        <div class="field-group">
+          <label for="numSwipes">Number of swipes:</label>
+          <input type="number" id="numSwipes" value="5" min="1">
         </div>
       </div>
 
@@ -201,14 +133,7 @@
           <label><input type="radio" name="mode" value="fixed" checked> Fixed</label>
           <label><input type="radio" name="mode" value="infinite"> Infinite</label>
         </div>
-        <div class="swipe-group" id="fixedSection" style="margin-left:24px;">
-          <div class="field-group" style="margin-bottom:0;">
-            <label for="numSwipes">Number of swipes:</label>
-            <input type="number" id="numSwipes" value="5" min="1">
-          </div>
-        </div>
       </div>
-
       <div id="estimate"></div>
       <div class="btn-row">
         <button type="submit" id="startButton">Start</button>
@@ -224,17 +149,18 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  // --- JS is 100% same as before ---
-  (function(){
+  (function() {
     const socket       = io();
     const vncHostIn    = document.getElementById('vncHost');
     const vncDispIn    = document.getElementById('vncDisplay');
     const vncPassIn    = document.getElementById('vncPassword');
     const pinInput     = document.getElementById('pinValue');
+    const startDegIn   = document.getElementById('startDeg');
+    const endDegIn     = document.getElementById('endDeg');
+    const stepSizeIn   = document.getElementById('stepSize');
     const waitBefore   = document.getElementById('waitBefore');
     const waitAfter    = document.getElementById('waitAfter');
     const modeRadios   = document.querySelectorAll("input[name='mode']");
-    const fixedSection = document.getElementById('fixedSection');
     const numSwipesIn  = document.getElementById('numSwipes');
     const speedSelect  = document.getElementById('speedSelect');
     const pauseInput   = document.getElementById('pauseDelay');
@@ -247,14 +173,15 @@
     const ejectDiv     = document.getElementById('ejectCountdown');
     const estimateDiv  = document.getElementById('estimate');
     const progressDiv  = document.getElementById('progress');
-    let swipeTimer, pinTimer, ejectTimer, swipeCountdownTimer, pinCountdownTimer, fixedSwipeCount, totalSwipes, sessionMode;
 
-    function updateMode(){
+    let stopRequested = false;
+    let currentRun = null;
+
+    function updateMode() {
       const m = document.querySelector("input[name='mode']:checked").value;
-      fixedSection.style.display = m==='fixed'?'flex':'none';
-      numSwipesIn.disabled       = m!=='fixed';
-      estimateDiv.style.display  = m==='fixed'?'block':'none';
-      progressDiv.style.display  = m==='fixed'?'block':'none';
+      numSwipesIn.disabled = m !== 'fixed';
+      estimateDiv.style.display = m === 'fixed' ? 'block' : 'none';
+      progressDiv.style.display = m === 'fixed' ? 'block' : 'none';
       if (m === 'fixed') showEstimate();
       else estimateDiv.textContent = '';
     }
@@ -265,180 +192,220 @@
       const waitPin = parseFloat(waitBefore.value) || 0;
       const waitEject = parseFloat(waitAfter.value) || 0;
       const step = parseInt(speedSelect.value) || 15;
-      const cardMoveTime = ((95-20)*2)*step/1000; // seconds for both in & out
+      const startDeg = parseInt(startDegIn.value) || 20;
+      const endDeg = parseInt(endDegIn.value) || 95;
+      const cardMoveTime = Math.abs(endDeg - startDeg) * 2 * step / 1000;
       const cycleTime = pauseS + cardMoveTime + waitPin + waitEject;
       const totalTime = nSwipes * cycleTime;
       estimateDiv.textContent = `Estimated total time: ~${Math.round(totalTime)} seconds (${(totalTime/60).toFixed(1)} min)`;
     }
-    [numSwipesIn, pauseInput, waitBefore, waitAfter, speedSelect].forEach(inp=>{
+    [numSwipesIn, pauseInput, waitBefore, waitAfter, speedSelect, startDegIn, endDegIn].forEach(inp=>{
       inp.addEventListener('input', showEstimate);
     });
 
     modeRadios.forEach(r=>r.addEventListener('change',updateMode));
     updateMode();
 
-    function resetUI(){
-      clearTimeout(swipeTimer); clearTimeout(pinTimer); clearTimeout(ejectTimer);
-      clearInterval(swipeCountdownTimer); clearInterval(pinCountdownTimer);
+    function resetUI() {
       swipeDiv.textContent = '';
       pinDiv.textContent   = '';
       ejectDiv.textContent = '';
       progressDiv.textContent = '';
       startBtn.style.display = 'block';
       stopBtn.style.display  = 'none';
-      fixedSwipeCount = 0;
-      totalSwipes = 0;
     }
 
-    form.addEventListener('submit', async e=>{
+    async function countdownUI(div, seconds, label) {
+      let remain = Math.ceil(seconds);
+      div.textContent = `${label} in ${remain}s`;
+      if (remain <= 0) { div.textContent = ''; return; }
+      return new Promise(resolve => {
+        const timer = setInterval(() => {
+          if (stopRequested) {
+            clearInterval(timer);
+            div.textContent = '';
+            resolve('stop');
+            return;
+          }
+          remain--;
+          if (remain <= 0) {
+            clearInterval(timer);
+            div.textContent = '';
+            resolve();
+          } else {
+            div.textContent = `${label} in ${remain}s`;
+          }
+        }, 1000);
+      });
+    }
+
+    async function sweep(from, to, step, delay) {
+      if (stopRequested) return;
+      // Send SWEEP command to backend
+      await fetch(`/sweep?start=${from}&end=${to}&step=${step}&delay=${delay}`);
+    }
+
+    async function typePin(pin) {
+      for (const ch of pin) {
+        if (stopRequested) return;
+        await fetch('/keypress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: ch })
+        });
+        await new Promise(r => setTimeout(r, 100));
+      }
+      if (stopRequested) return;
+      await fetch('/keypress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'enter' })
+      });
+    }
+
+    async function fixedModeCycle() {
+      const nSwipes = parseInt(numSwipesIn.value) || 1;
+      const pauseS = parseFloat(pauseInput.value) || 0;
+      const waitPin = parseFloat(waitBefore.value) || 0;
+      const waitEject = parseFloat(waitAfter.value) || 0;
+      const stepDelay = parseInt(speedSelect.value) || 15;
+      const stepSize = parseInt(stepSizeIn.value) || 1;
+      const startDeg = parseInt(startDegIn.value) || 20;
+      const endDeg = parseInt(endDegIn.value) || 95;
+      const pin = pinInput.value.trim();
+
+      for (let i = 0; i < nSwipes; i++) {
+        if (stopRequested) break;
+        progressDiv.textContent = `Swipe ${i+1} of ${nSwipes}`;
+        statusDiv.textContent = 'Status: Waiting before swipe...';
+
+        if (await countdownUI(swipeDiv, pauseS, "Next insert") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Card inserting';
+        await sweep(startDeg, endDeg, stepSize, stepDelay);
+        if (stopRequested) break;
+
+        if (await countdownUI(pinDiv, waitPin, "Typing PIN") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Typing PIN';
+        await typePin(pin);
+        if (stopRequested) break;
+
+        if (await countdownUI(ejectDiv, waitEject, "Ejecting card") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Ejecting card';
+        await sweep(endDeg, startDeg, stepSize, stepDelay);
+        if (stopRequested) break;
+      }
+      statusDiv.textContent = 'Status: stopped';
+      resetUI();
+      currentRun = null;
+    }
+
+    async function infiniteModeCycle() {
+      const pauseS = parseFloat(pauseInput.value) || 0;
+      const waitPin = parseFloat(waitBefore.value) || 0;
+      const waitEject = parseFloat(waitAfter.value) || 0;
+      const stepDelay = parseInt(speedSelect.value) || 15;
+      const stepSize = parseInt(stepSizeIn.value) || 1;
+      const startDeg = parseInt(startDegIn.value) || 20;
+      const endDeg = parseInt(endDegIn.value) || 95;
+      const pin = pinInput.value.trim();
+
+      let swipeCount = 0;
+      while (!stopRequested) {
+        swipeCount++;
+        progressDiv.textContent = `Swipe ${swipeCount}`;
+        statusDiv.textContent = 'Status: Waiting before swipe...';
+
+        if (await countdownUI(swipeDiv, pauseS, "Next insert") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Card inserting';
+        await sweep(startDeg, endDeg, stepSize, stepDelay);
+        if (stopRequested) break;
+
+        if (await countdownUI(pinDiv, waitPin, "Typing PIN") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Typing PIN';
+        await typePin(pin);
+        if (stopRequested) break;
+
+        if (await countdownUI(ejectDiv, waitEject, "Ejecting card") === 'stop') break;
+        if (stopRequested) break;
+
+        statusDiv.textContent = 'Status: Ejecting card';
+        await sweep(endDeg, startDeg, stepSize, stepDelay);
+        if (stopRequested) break;
+      }
+      statusDiv.textContent = 'Status: stopped';
+      resetUI();
+      currentRun = null;
+    }
+
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      // gather inputs
+      stopRequested = false;
+
+      // End any previous run
+      if (currentRun) {
+        stopRequested = true;
+        await currentRun;
+      }
+
+      // Required fields
       const host = vncHostIn.value.trim();
-      const disp = parseInt(vncDispIn.value) || 0;
-      const pass = vncPassIn.value;
       const pin  = pinInput.value.trim();
-      const wb   = parseFloat(waitBefore.value);
-      const wa   = parseFloat(waitAfter.value);
-      const nSw  = parseInt(numSwipesIn.value) || 1;
-      const step = parseInt(speedSelect.value)  || 15;
-      const pau  = parseFloat(pauseInput.value)    || 0; // now in seconds
-      if(!host || !pin){
+      if (!host || !pin) {
         statusDiv.textContent = 'Status: IP & PIN required';
         return;
       }
-      const mode = document.querySelector("input[name='mode']:checked").value;
-      sessionMode = mode;
-      fixedSwipeCount = 0;
-      totalSwipes = nSw;
-      const qs   =
-        `mode=${mode}` +
-        `&numSwipes=${nSw}` +
-        `&stepDelay=${step}&pauseDelay=${pau*1000}` + // convert to ms for server
+
+      // Send initial setup (e.g. VNC and Arduino config)
+      const disp = parseInt(vncDispIn.value) || 0;
+      const pass = vncPassIn.value;
+      const stepDelay = parseInt(speedSelect.value) || 15;
+      const pauseMs = (parseFloat(pauseInput.value) || 0) * 1000;
+
+      // (You may need to extend /run endpoint to take new params)
+      const qs =
+        `stepDelay=${stepDelay}&pauseDelay=${pauseMs}` +
         `&vncHost=${encodeURIComponent(host)}` +
         `&vncDisplay=${disp}` +
-        `&vncPass=${encodeURIComponent(pass)}` +
-        `&waitBefore=${wb}&waitAfter=${wa}&pin=${encodeURIComponent(pin)}`;
+        `&vncPass=${encodeURIComponent(pass)}`;
+
       statusDiv.textContent = 'Status: Connecting to VNC…';
       resetUI();
+      startBtn.style.display = 'none';
+      stopBtn.style.display  = 'inline-block';
       try {
         await fetch(`/run?${qs}`);
-      } catch(err) {
+      } catch (err) {
         statusDiv.textContent = 'Status: Failed to configure';
         console.error(err);
+        return;
       }
+
+      const mode = document.querySelector("input[name='mode']:checked").value;
+      currentRun = mode === 'fixed' ? fixedModeCycle() : infiniteModeCycle();
     });
 
-    stopBtn.addEventListener('click', async ()=>{
+    stopBtn.addEventListener('click', async () => {
+      stopRequested = true;
       await fetch('/stop');
       statusDiv.textContent = 'Status: stopped';
       resetUI();
     });
 
-    function startCountdown(div, secs, label, onDone) {
-      div.textContent = `${label} in ${secs}s`;
-      let remain = secs;
-      let timer = setInterval(() => {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(timer);
-          div.textContent = '';
-          onDone && onDone();
-        } else {
-          div.textContent = `${label} in ${remain}s`;
-        }
-      }, 1000);
-      return timer;
-    }
-
+    // Socket status handling (optional, keeps old style)
     socket.on('status', msg => {
-      if (msg === 'VNC connected') {
-        statusDiv.innerHTML = '<span class="tick">✅ VNC connected</span>';
+      statusDiv.textContent = `Status: ${msg}`;
+      if (msg.match(/done|stopped|error/i)) {
         resetUI();
-        startBtn.style.display = 'none';
-        stopBtn.style.display  = 'inline-block';
-        if (sessionMode === 'fixed') {
-          fixedSwipeCount = 0;
-          totalSwipes = parseInt(numSwipesIn.value) || 1;
-          doSwipeCycle();
-        } else if (sessionMode === 'infinite') {
-          const pau = parseFloat(pauseInput.value) || 0;
-          let remSwipe = Math.ceil(pau);
-          swipeTimer = startCountdown(swipeDiv, remSwipe, "Next insert", async () => {
-            statusDiv.textContent = 'Status: Card inserting';
-            await fetch('/insert', { method: 'POST' });
-          });
-        }
-      }
-      else if (msg === 'VNC error') {
-        statusDiv.innerHTML = '<span class="err">❌ VNC error</span>';
-        resetUI();
-      }
-      else if (msg === 'Card removed') {
-        statusDiv.textContent = 'Status: Card removed';
-        if (sessionMode === 'infinite') {
-          const pau = parseFloat(pauseInput.value) || 0;
-          let remSwipe = Math.ceil(pau);
-          swipeTimer = startCountdown(swipeDiv, remSwipe, "Next insert", async () => {
-            statusDiv.textContent = 'Status: Card inserting';
-            await fetch('/insert', { method: 'POST' });
-          });
-        }
-      }
-    });
-
-    function doSwipeCycle() {
-      if (fixedSwipeCount >= totalSwipes) {
-        statusDiv.innerHTML = '<span class="tick">✅ Done! All swipes complete.</span>';
-        progressDiv.textContent = '';
-        startBtn.style.display = 'block';
-        stopBtn.style.display  = 'none';
-        return;
-      }
-      fixedSwipeCount++;
-      progressDiv.textContent = `Swipe ${fixedSwipeCount} of ${totalSwipes}`;
-      const pau = parseFloat(pauseInput.value) || 0;
-      let remSwipe = Math.ceil(pau);
-      swipeCountdownTimer = startCountdown(swipeDiv, remSwipe, "Next insert", async () => {
-        statusDiv.textContent = 'Status: Card inserting';
-        await fetch('/insert', { method: 'POST' });
-      });
-    }
-
-    socket.on('card-inserted', () => {
-      statusDiv.textContent = 'Status: Card inserted';
-      const wb = parseFloat(waitBefore.value);
-      let remPin = Math.ceil(wb);
-      clearInterval(pinCountdownTimer);
-      pinCountdownTimer = startCountdown(pinDiv, remPin, "Typing PIN", async () => {
-        statusDiv.textContent = 'Status: Typing PIN';
-        const pin = pinInput.value.trim();
-        for (const ch of pin) {
-          await fetch('/keypress', {
-            method: 'POST',
-            headers:{ 'Content-Type':'application/json' },
-            body: JSON.stringify({ key: ch })
-          });
-          await new Promise(r=>setTimeout(r,100));
-        }
-        await fetch('/keypress', {
-          method: 'POST',
-          headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({ key:'enter' })
-        });
-
-        const wa = parseFloat(waitAfter.value);
-        let remE = Math.ceil(wa);
-        ejectTimer = startCountdown(ejectDiv, remE, "Ejecting card", async () => {
-          statusDiv.textContent = 'Status: Ejecting card';
-          await fetch('/insert', { method: 'POST' });
-        });
-      });
-    });
-
-    socket.on('card-removed', () => {
-      statusDiv.textContent = 'Status: Card removed';
-      if (sessionMode === 'fixed') {
-        setTimeout(doSwipeCycle, 300);
       }
     });
 

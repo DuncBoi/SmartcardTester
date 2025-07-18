@@ -1,29 +1,45 @@
 #include <Servo.h>
+
 Servo myservo;
-int pos = 20;
-bool running = false;
-unsigned long stepDelay  = 15;
-unsigned long pauseDelay = 1000;
+bool sweeping = false;
+int startPos = 20;
+int endPos = 95;
+int stepSize = 1;
+unsigned long stepDelay = 15; // ms
+unsigned long lastStep = 0;
+int currentPos = 20;
 
 void handleSerialCommands() {
   while (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
-    if (cmd == "START") {
-      running = true;
-      Serial.println("Started");
+
+    if (cmd.startsWith("SWEEP:")) {
+      // Format: SWEEP:START,END,STEP,DELAY
+      int p1 = cmd.indexOf(':')+1;
+      int p2 = cmd.indexOf(',',p1);
+      int p3 = cmd.indexOf(',',p2+1);
+      int p4 = cmd.indexOf(',',p3+1);
+
+      startPos  = cmd.substring(p1, p2).toInt();
+      endPos    = cmd.substring(p2+1, p3).toInt();
+      stepSize  = cmd.substring(p3+1, p4).toInt();
+      stepDelay = cmd.substring(p4+1).toInt();
+      currentPos = startPos;
+      sweeping = true;
+      myservo.write(currentPos);
+      lastStep = millis();
+      Serial.println("SweepStart");
     }
     else if (cmd == "STOP") {
-      running = false;
+      sweeping = false;
       Serial.println("Stopped");
     }
-    else if (cmd.startsWith("STEP:")) {
-      stepDelay = cmd.substring(5).toInt();
-      Serial.print("Step:"); Serial.println(stepDelay);
-    }
-    else if (cmd.startsWith("PAUSE:")) {
-      pauseDelay = cmd.substring(6).toInt();
-      Serial.print("Pause:"); Serial.println(pauseDelay);
+    else if (cmd == "RESET") {
+      sweeping = false;
+      currentPos = startPos;
+      myservo.write(currentPos);
+      Serial.println("Reset");
     }
   }
 }
@@ -33,47 +49,42 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);
   Serial.println("Ready");
-  myservo.write(pos);
+  myservo.write(startPos);
 }
 
 void loop() {
   handleSerialCommands();
-  if (!running) return;
 
-  // sweep up 0→90
-  for (pos = 20; pos <= 95; pos++) {
-    myservo.write(pos);
-    delay(stepDelay);
-    handleSerialCommands();
-    if (!running) return;
+  if (sweeping) {
+    // This is the "non-blocking" stepper
+    if (millis() - lastStep >= stepDelay) {
+      // --- Check for STOP right before step ---
+      handleSerialCommands();
+      if (!sweeping) return;
+
+      // Now move the servo one step
+      myservo.write(currentPos);
+
+      // Update position for next step
+      if (startPos < endPos) {
+        currentPos += stepSize;
+        if (currentPos > endPos) {
+          sweeping = false;
+          Serial.println("SweepDone");
+        }
+      } else {
+        currentPos -= stepSize;
+        if (currentPos < endPos) {
+          sweeping = false;
+          Serial.println("SweepDone");
+        }
+      }
+      lastStep = millis();
+
+      // --- Check for STOP right after step ---
+      handleSerialCommands();
+      if (!sweeping) return;
+    }
   }
-
-  // pause at 90
-  running = false;
-  Serial.println("CARD:INSERTED");
-
-  // wait for resume ("START")
-  String resp;
-  do {
-    handleSerialCommands();
-    while (!Serial.available());
-    resp = Serial.readStringUntil('\n');
-    resp.trim();
-  } while (resp != "START");
-
-  Serial.println("Resumed");
-  running = true;
-
-  // sweep down 90→0
-  for (pos = 95; pos >= 20; pos--) {
-    myservo.write(pos);
-    delay(stepDelay);
-    handleSerialCommands();
-    if (!running) return;
-  }
-
-  Serial.println("CARD:REMOVED");
-
-  // pause before next cycle
-  delay(pauseDelay);
 }
+
