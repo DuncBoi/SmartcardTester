@@ -5,10 +5,12 @@ const { Server }        = require('socket.io');
 const { SerialPort }    = require('serialport');
 const { ReadlineParser }= require('@serialport/parser-readline');
 const path              = require('path');
+const RFB               = require('rfb2');
 
 const app    = express();
 const server = http.createServer(app);
 const io     = new Server(server);
+let rfb = null;
 const PORT   = 3002;
 
 app.use((req, res, next) => {
@@ -63,6 +65,71 @@ app.get('/sweep', (req, res) => {
 app.get('/stop', (req, res) => {
   ar.write('STOP\n');
   io.emit('status', 'Sent STOP');
+  res.send('OK');
+});
+
+function setupVnc(host, display, password) {
+  const port = 5900 + (parseInt(display) || 0);
+  console.log(`Trying to connect to VNC at ${host}:${port}`);
+  io.emit('status', `Connecting to VNC ${host}:${port}`);
+  if (rfb) {
+    console.log("Closing previous VNC...");
+    rfb.end();
+    io.emit('status', 'Closed previous VNC');
+  }
+  let opts = { host, port };
+  if (password && password.trim() !== "") {
+    opts.password = password;
+    console.log("Using VNC password.");
+  } else {
+    console.log("Connecting with NO VNC password.");
+  }
+  rfb = RFB.createConnection(opts);
+  rfb.on('connect', () => {
+    console.log("VNC CONNECTED!");
+    io.emit('status', 'VNC connected');
+  });
+  rfb.on('error', (err) => {
+    console.log("VNC ERROR:", err);
+    io.emit('status', 'VNC error: ' + (err?.message || err));
+  });
+}
+
+function sendKeySym(k) {
+  if (!rfb) return;
+  rfb.keyEvent(k, true);
+  rfb.keyEvent(k, false);
+}
+
+const keyMap = {
+  enter: 0xff0d,
+  esc:   0xff1b,
+  up:    0xff52,
+  down:  0xff54,
+  left:  0xff51,
+  right: 0xff53,
+  'ctrl-alt-del': () => rfb && rfb.sendCtrlAltDel()
+};
+
+app.get('/run', (req, res) => {
+  // VNC config
+  const { vncHost, vncDisplay, vncPass } = req.query;
+    setupVnc(
+      decodeURIComponent(vncHost),
+      parseInt(vncDisplay) || 0,
+      decodeURIComponent(vncPass)
+    );
+  res.send('OK');
+});
+
+app.post('/keypress', (req, res) => {
+  const { key } = req.body;
+  let action = keyMap[key];
+  if (!action && key.length === 1) action = key.charCodeAt(0);
+  if (!action) return res.status(400).send('Unknown key');
+  io.emit('status', `Typing '${key}'`);
+  if (typeof action === 'function') action();
+  else sendKeySym(action);
   res.send('OK');
 });
 
