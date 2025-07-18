@@ -6,6 +6,9 @@ const { SerialPort }    = require('serialport');
 const { ReadlineParser }= require('@serialport/parser-readline');
 const path              = require('path');
 const RFB               = require('rfb2');
+const { exec } = require('child_process');
+const fs = require('fs');
+
 
 const app    = express();
 const server = http.createServer(app);
@@ -131,6 +134,40 @@ app.post('/keypress', (req, res) => {
   if (typeof action === 'function') action();
   else sendKeySym(action);
   res.send('OK');
+});
+
+app.get('/download-logs', (req, res) => {
+  // CHANGE these to your actual user/host/script!
+  const USER = 'noah';
+  const HOST = '10.15.57.7';  // or whatever
+  const REMOTE_PATH = '/home/noah/scripts'; // or wherever collectLogs.sh lives
+
+  // Run your bash script as a child process
+  const script = `./run_and_fetch_remote_logs.sh ${USER} ${HOST} ${REMOTE_PATH}`;
+  exec(script, (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error fetching logs:', stderr);
+      return res.status(500).send('Failed to fetch logs');
+    }
+
+    // Figure out the most recent retrieved_logs_*/remote.zip
+    fs.readdir('.', (err, files) => {
+      if (err) return res.status(500).send('Internal error');
+
+      // Find the newest retrieved_logs_* directory
+      const dirs = files.filter(f => f.startsWith('retrieved_logs_'));
+      if (dirs.length === 0) return res.status(404).send('No logs found');
+
+      const latestDir = dirs.sort().reverse()[0]; // sort by name (timestamped)
+      const zipPath = `${latestDir}/remote.zip`;
+      if (!fs.existsSync(zipPath)) return res.status(404).send('No ZIP found');
+
+      // Set headers for download
+      res.setHeader('Content-Disposition', `attachment; filename="printer_logs_${Date.now()}.zip"`);
+      res.setHeader('Content-Type', 'application/zip');
+      fs.createReadStream(zipPath).pipe(res);
+    });
+  });
 });
 
 server.listen(PORT, '0.0.0.0', () => {

@@ -138,6 +138,7 @@
         <button type="submit" id="startButton">Start</button>
         <button type="button" id="stopButton" style="display:none;">Stop</button>
       </div>
+<button id="downloadLogsBtn" style="margin-top:18px;">Download Printer Logs</button>
     </form>
     <div class="status" id="status">Status: idle</div>
     <div class="countdown" id="swipeCountdown"></div>
@@ -429,6 +430,16 @@ function waitForVnc() {
         resetUI();
       }
     });
+
+
+document.getElementById('downloadLogsBtn').addEventListener('click', async () => {
+  statusDiv.textContent = 'Status: Fetching logs...';
+  try {
+    window.location.href = '/download-logs';
+  } catch (e) {
+    statusDiv.textContent = 'Status: Failed to fetch logs';
+  }
+});
 
   })();
   </script>
