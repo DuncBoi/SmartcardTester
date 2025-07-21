@@ -136,33 +136,30 @@ app.post('/keypress', (req, res) => {
   res.send('OK');
 });
 
-app.get('/download-logs', (req, res) => {
-  // CHANGE these to your actual user/host/script!
-  const USER = 'noah';
-  const HOST = '10.15.57.7';  // or whatever
-  const REMOTE_PATH = '/home/noah/scripts'; // or wherever collectLogs.sh lives
+const LOGS_DIR = path.join(__dirname, 'logs');
+if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR, { recursive: true });
 
-  // Run your bash script as a child process
-  const script = `./run_and_fetch_remote_logs.sh ${USER} ${HOST} ${REMOTE_PATH}`;
+app.get('/download-logs', (req, res) => {
+  const USER = 'root';
+  const HOST = '10.15.57.7';  // printer ip
+
+  // Pass LOGS_DIR as the 4th argument
+  const script = `./run_and_fetch_remote_logs.sh ${USER} ${HOST} ${LOGS_DIR}`;
   exec(script, (error, stdout, stderr) => {
     if (error) {
       console.error('Error fetching logs:', stderr);
       return res.status(500).send('Failed to fetch logs');
     }
 
-    // Figure out the most recent retrieved_logs_*/remote.zip
-    fs.readdir('.', (err, files) => {
+    // Find the newest directory inside logs/
+    fs.readdir(LOGS_DIR, (err, files) => {
       if (err) return res.status(500).send('Internal error');
-
-      // Find the newest retrieved_logs_* directory
       const dirs = files.filter(f => f.startsWith('retrieved_logs_'));
       if (dirs.length === 0) return res.status(404).send('No logs found');
-
-      const latestDir = dirs.sort().reverse()[0]; // sort by name (timestamped)
-      const zipPath = `${latestDir}/remote.zip`;
+      const latestDir = dirs.sort().reverse()[0];
+      const zipPath = path.join(LOGS_DIR, latestDir, 'remote.zip');
       if (!fs.existsSync(zipPath)) return res.status(404).send('No ZIP found');
 
-      // Set headers for download
       res.setHeader('Content-Disposition', `attachment; filename="printer_logs_${Date.now()}.zip"`);
       res.setHeader('Content-Type', 'application/zip');
       fs.createReadStream(zipPath).pipe(res);
