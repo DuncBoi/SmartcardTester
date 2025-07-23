@@ -1,4 +1,3 @@
-
 const express           = require('express');
 const http              = require('http');
 const { Server }        = require('socket.io');
@@ -17,9 +16,9 @@ let rfb = null;
 const PORT   = 3002;
 
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store');
-  res.set('Pragma', 'no-cache');
-  next();
+    res.set('Cache-Control', 'no-store');
+    res.set('Pragma', 'no-cache');
+    next();
 });
 app.use(express.json());
 app.get('/', (r, s) => s.sendFile(path.join(__dirname, 'index.html')));
@@ -32,143 +31,163 @@ const parser = ar.pipe(new ReadlineParser({ delimiter: '\n' }));
 ar.on('open',  () => io.emit('status', 'Serial open'));
 ar.on('error', e  => io.emit('status', 'Serial error'));
 parser.on('data', line => {
-  const msg = line.trim();
-  if (msg === 'SweepStart') io.emit('status', 'Servo sweep started');
-  if (msg === 'SweepDone')  io.emit('status', 'Servo sweep complete');
-  if (msg === 'Stopped')    io.emit('status', 'Servo stopped');
+    const msg = line.trim();
+    if (msg === 'SweepStart') io.emit('status', 'Servo sweep started');
+    if (msg === 'SweepDone')  io.emit('status', 'Servo sweep complete');
+    if (msg === 'Stopped')    io.emit('status', 'Servo stopped');
 });
 
 // NEW: /sweep endpoint
 app.get('/sweep', (req, res) => {
-  // Expects: start, end, step, delay (ms)
-  const {
-    start,
-    end,
-    step,
-    delay
-  } = req.query;
+    // Expects: start, end, step, delay (ms)
+    const {
+        start,
+        end,
+        step,
+        delay
+    } = req.query;
 
-  if (
-    start === undefined ||
-    end === undefined ||
-    step === undefined ||
-    delay === undefined
-  ) {
-    return res.status(400).send('Missing parameters');
-  }
+    if (
+        start === undefined ||
+            end === undefined ||
+            step === undefined ||
+            delay === undefined
+    ) {
+        return res.status(400).send('Missing parameters');
+    }
 
-  const sweepCmd = `SWEEP:${start},${end},${step},${delay}\n`;
-  console.log('[SWEEP CMD]', sweepCmd.trim());
-  ar.write(sweepCmd);
-  io.emit('status', 'Sent sweep command: ' + sweepCmd.trim());
-  res.send('OK');
+    const sweepCmd = `SWEEP:${start},${end},${step},${delay}\n`;
+    console.log('[SWEEP CMD]', sweepCmd.trim());
+    ar.write(sweepCmd);
+    io.emit('status', 'Sent sweep command: ' + sweepCmd.trim());
+    res.send('OK');
 });
 
 // STOP endpoint
 app.get('/stop', (req, res) => {
-  ar.write('STOP\n');
-  io.emit('status', 'Sent STOP');
-  res.send('OK');
+    ar.write('STOP\n');
+    io.emit('status', 'Sent STOP');
+    res.send('OK');
 });
 
 function setupVnc(host, display, password) {
-  const port = 5900 + (parseInt(display) || 0);
-  console.log(`Trying to connect to VNC at ${host}:${port}`);
-  io.emit('status', `Connecting to VNC ${host}:${port}`);
-  if (rfb) {
-    console.log("Closing previous VNC...");
-    rfb.end();
-    io.emit('status', 'Closed previous VNC');
-  }
-  let opts = { host, port };
-  if (password && password.trim() !== "") {
-    opts.password = password;
-    console.log("Using VNC password.");
-  } else {
-    console.log("Connecting with NO VNC password.");
-  }
-  rfb = RFB.createConnection(opts);
-  rfb.on('connect', () => {
-    console.log("VNC CONNECTED!");
-    io.emit('status', 'VNC connected');
-  });
-  rfb.on('error', (err) => {
-    console.log("VNC ERROR:", err);
-    io.emit('status', 'VNC error: ' + (err?.message || err));
-  });
+    const port = 5900 + (parseInt(display) || 0);
+    console.log(`Trying to connect to VNC at ${host}:${port}`);
+    io.emit('status', `Connecting to VNC ${host}:${port}`);
+    if (rfb) {
+        console.log("Closing previous VNC...");
+        rfb.end();
+        io.emit('status', 'Closed previous VNC');
+    }
+    let opts = { host, port };
+    if (password && password.trim() !== "") {
+        opts.password = password;
+        console.log("Using VNC password.");
+    } else {
+        console.log("Connecting with NO VNC password.");
+    }
+    rfb = RFB.createConnection(opts);
+    rfb.on('connect', () => {
+        console.log("VNC CONNECTED!");
+        io.emit('status', 'VNC connected');
+    });
+    rfb.on('error', (err) => {
+        console.log("VNC ERROR:", err);
+        io.emit('status', 'VNC error: ' + (err?.message || err));
+    });
 }
 
 function sendKeySym(k) {
-  if (!rfb) return;
-  rfb.keyEvent(k, true);
-  rfb.keyEvent(k, false);
+    if (!rfb) return;
+    rfb.keyEvent(k, true);
+    rfb.keyEvent(k, false);
 }
 
 const keyMap = {
-  enter: 0xff0d,
-  esc:   0xff1b,
-  up:    0xff52,
-  down:  0xff54,
-  left:  0xff51,
-  right: 0xff53,
-  'ctrl-alt-del': () => rfb && rfb.sendCtrlAltDel()
+    enter: 0xff0d,
+    esc:   0xff1b,
+    up:    0xff52,
+    down:  0xff54,
+    left:  0xff51,
+    right: 0xff53,
+    'ctrl-alt-del': () => rfb && rfb.sendCtrlAltDel()
 };
 
 app.get('/run', (req, res) => {
-  // VNC config
-  const { vncHost, vncDisplay, vncPass } = req.query;
+    // VNC config
+    const { vncHost, vncDisplay, vncPass } = req.query;
     setupVnc(
-      decodeURIComponent(vncHost),
-      parseInt(vncDisplay) || 0,
-      decodeURIComponent(vncPass)
+        decodeURIComponent(vncHost),
+        parseInt(vncDisplay) || 0,
+        decodeURIComponent(vncPass)
     );
-  res.send('OK');
+    res.send('OK');
 });
 
 app.post('/keypress', (req, res) => {
-  const { key } = req.body;
-  let action = keyMap[key];
-  if (!action && key.length === 1) action = key.charCodeAt(0);
-  if (!action) return res.status(400).send('Unknown key');
-  io.emit('status', `Typing '${key}'`);
-  if (typeof action === 'function') action();
-  else sendKeySym(action);
-  res.send('OK');
+    const { key } = req.body;
+    let action = keyMap[key];
+    if (!action && key.length === 1) action = key.charCodeAt(0);
+    if (!action) return res.status(400).send('Unknown key');
+    io.emit('status', `Typing '${key}'`);
+    if (typeof action === 'function') action();
+        else sendKeySym(action);
+    res.send('OK');
 });
 
 const LOGS_DIR = path.join(__dirname, 'logs');
 if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR, { recursive: true });
 
 app.get('/download-logs', (req, res) => {
-  const USER = 'root';
-  const HOST = '10.15.57.7';  // printer ip
+    const USER = 'root';
+    const HOST = '10.15.57.7';  // printer ip
 
-  // Pass LOGS_DIR as the 4th argument
-  const script = `./run_and_fetch_remote_logs.sh ${USER} ${HOST} ${LOGS_DIR}`;
-  exec(script, (error, stdout, stderr) => {
-    if (error) {
-      console.error('Error fetching logs:', stderr);
-      return res.status(500).send('Failed to fetch logs');
-    }
+    // Pass LOGS_DIR as the 4th argument
+    const script = `./run_and_fetch_remote_logs.sh ${USER} ${HOST} ${LOGS_DIR}`;
+    exec(script, (error, stdout, stderr) => {
+        if (error) {
+            console.error('Error fetching logs:', stderr);
+            return res.status(500).send('Failed to fetch logs');
+        }
 
-    // Find the newest directory inside logs/
-    fs.readdir(LOGS_DIR, (err, files) => {
-      if (err) return res.status(500).send('Internal error');
-      const dirs = files.filter(f => f.startsWith('retrieved_logs_'));
-      if (dirs.length === 0) return res.status(404).send('No logs found');
-      const latestDir = dirs.sort().reverse()[0];
-      const zipPath = path.join(LOGS_DIR, latestDir, 'remote.zip');
-      if (!fs.existsSync(zipPath)) return res.status(404).send('No ZIP found');
+        // Find the newest directory inside logs/
+        fs.readdir(LOGS_DIR, (err, files) => {
+            if (err) return res.status(500).send('Internal error');
+            const dirs = files.filter(f => f.startsWith('retrieved_logs_'));
+            if (dirs.length === 0) return res.status(404).send('No logs found');
+            const latestDir = dirs.sort().reverse()[0];
+            const zipPath = path.join(LOGS_DIR, latestDir, 'remote.zip');
+            if (!fs.existsSync(zipPath)) return res.status(404).send('No ZIP found');
 
-      res.setHeader('Content-Disposition', `attachment; filename="printer_logs_${Date.now()}.zip"`);
-      res.setHeader('Content-Type', 'application/zip');
-      fs.createReadStream(zipPath).pipe(res);
+            res.setHeader('Content-Disposition', `attachment; filename="printer_logs_${Date.now()}.zip"`);
+            res.setHeader('Content-Type', 'application/zip');
+            fs.createReadStream(zipPath).pipe(res);
+        });
     });
-  });
+});
+
+
+io.on('connection', (socket) => {
+    socket.on('get_printer_logs', () => {
+        // Find newest logs directory
+        fs.readdir(LOGS_DIR, (err, files) => {
+            if (err) return;
+            const dirs = files.filter(f => f.startsWith('retrieved_logs_'));
+            if (dirs.length === 0) return;
+            const latestDir = dirs.sort().reverse()[0];
+
+            const logPath = path.join(LOGS_DIR, latestDir, 'remote_log.txt');
+            if (!fs.existsSync(logPath)) return;
+            fs.readFile(logPath, 'utf8', (err, data) => {
+                if (err) return;
+                socket.emit('printer_logs', data);
+            });
+        });
+    });
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server up on port ${PORT}`);
-  io.emit('status', `Server up on port ${PORT}`);
+    console.log(`Server up on port ${PORT}`);
+    io.emit('status', `Server up on port ${PORT}`);
 });
 
