@@ -1,12 +1,12 @@
-# SmartCard Tester System
+# SmartCard Tester
 
-A repo for automating SmartCard stress-testing. It uses an Arduino connected to a servo moto for physical card insertion into a reader, and a Node.js/Express web server to service it. 
-The web server communicates with the arduino and coordinates swiping patterns along with automated password entry through a VNC conection to the device.
+A repo for automating SmartCard stress-testing. It uses an Arduino connected to a servo motor for physical card insertion into a reader, and a Node.js/Express web server to service it. 
+The web server communicates with the Arduino and coordinates swiping patterns along with automated password entry through a VNC conection to the device.
 
 ---
 
 ## Table of Contents
-- [Features](#features)
+- [How It Works](#how-it-works)
 - [Hardware and Software Requirements](#hardware-and-software-requirements)
 - [Setup Instructions](#setup-instructions)
 - [System Overview](#system-overview)
@@ -20,7 +20,7 @@ The web server communicates with the arduino and coordinates swiping patterns al
 
 ---
 
-## Features
+## How it Works
 - **Automated servo sweep:** Controls the physical movement of the smartcard using Arduino and a servo motor.
 - **PIN entry automation:** Simulates PIN entry via VNC and keystrokes to the printer.
 - **Flexible cycle configuration:** Set sweep angles, speed, pauses, PINs, and run count via web UI.
